@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { View, Text, SectionList, TouchableOpacity, ActivityIndicator, Image, TextInput } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { supabase } from '../../utils/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCallback } from 'react';
 import { useOfflineStore } from '../../store/offlineStore';
 
 export default function DealersList() {
     const [dealers, setDealers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
     const router = useRouter();
     const { queue } = useOfflineStore();
 
@@ -41,9 +41,11 @@ export default function DealersList() {
 
                 const completed = userSurveys.find((s: any) => s.status === 'Completed');
                 const draft = userSurveys.find((s: any) => s.status === 'Draft');
+                const country = dealer.address ? (dealer.address.split(',').pop()?.trim() || 'Unknown') : 'Unknown';
 
                 return {
                     ...dealer,
+                    country,
                     surveyStatus: completed ? 'Completed' : (draft ? 'Draft' : 'None'),
                     surveyProgress: draft ? draft.overall_score : 0,
                     recommendation: completed ? completed.recommendation : null,
@@ -58,6 +60,25 @@ export default function DealersList() {
     async function signOut() {
         await supabase.auth.signOut();
     }
+
+    const sections = useMemo(() => {
+        const filtered = dealers.filter(d =>
+            (d.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (d.address || '').toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        const grouped = filtered.reduce((acc, dealer) => {
+            const country = dealer.country || 'Unknown';
+            if (!acc[country]) acc[country] = [];
+            acc[country].push(dealer);
+            return acc;
+        }, {} as Record<string, any[]>);
+
+        return Object.keys(grouped).sort().map(country => ({
+            title: country,
+            data: grouped[country]
+        }));
+    }, [dealers, searchQuery]);
 
     return (
         <SafeAreaView className="flex-1 bg-[#f4f4f7]">
@@ -81,13 +102,27 @@ export default function DealersList() {
                     </TouchableOpacity>
                 </View>
             </View>
+            <View className="px-4 py-4 z-10">
+                <TextInput
+                    placeholder="Search dealers by name or location..."
+                    placeholderTextColor="#8a94a6"
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    className="bg-white border border-[#eaedf2] rounded-[20px] px-5 h-[48px] text-[#1e1e2d] font-medium text-[14px]"
+                />
+            </View>
             {loading ? (
                 <ActivityIndicator className="mt-8" size="large" color="#007AFF" />
             ) : (
-                <FlatList
-                    data={dealers}
+                <SectionList
+                    sections={sections}
                     keyExtractor={(item) => item.id}
-                    className="px-4 pt-4"
+                    className="px-4"
+                    renderSectionHeader={({ section: { title } }) => (
+                        <View className="py-2 px-1 mb-2 mt-2 border-b border-[#eaedf2]">
+                            <Text className="text-[11px] font-bold text-[#8a94a6] uppercase tracking-[1.5px]">{title}</Text>
+                        </View>
+                    )}
                     renderItem={({ item }) => (
                         <TouchableOpacity
                             className="bg-white p-6 rounded-[24px] mb-4 shadow-sm border border-[#eaedf2] flex-row items-center justify-between"
@@ -116,7 +151,7 @@ export default function DealersList() {
                     ListEmptyComponent={
                         <View className="mt-10 items-center justify-center">
                             <Text className="text-slate-500 text-lg mb-2 text-center">No dealers found.</Text>
-                            <Text className="text-slate-400 text-center mb-6">Create one to get started with a site survey.</Text>
+                            <Text className="text-slate-400 text-center mb-6">Try a different search or create a new one.</Text>
                         </View>
                     }
                 />
