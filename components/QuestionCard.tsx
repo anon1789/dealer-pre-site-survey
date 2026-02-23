@@ -1,9 +1,11 @@
 import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
+import { useState } from 'react';
 import { useSurveyStore, ResponseValue } from '../store/surveyStore';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function QuestionCard({ category, question, questionNum, isLast }: { category: string, question: string, questionNum?: string, isLast?: boolean }) {
     const { responses, setResponse } = useSurveyStore();
+    const [inputHeight, setInputHeight] = useState(20);
 
     const response = responses[category]?.[question];
     const responseValue = response?.response_value;
@@ -82,8 +84,9 @@ export default function QuestionCard({ category, question, questionNum, isLast }
                         placeholderTextColor="#a0aab8"
                         multiline
                         scrollEnabled={false}
+                        onContentSizeChange={(e) => setInputHeight(e.nativeEvent.contentSize.height)}
                         className="text-[15px] text-[#1e1e2d] font-medium leading-[20px]"
-                        style={{ paddingTop: 0, paddingBottom: 0, textAlignVertical: 'top' }}
+                        style={{ paddingTop: 0, paddingBottom: 0, textAlignVertical: 'top', height: Math.max(20, inputHeight) }}
                     />
                 </View>
             </View>
