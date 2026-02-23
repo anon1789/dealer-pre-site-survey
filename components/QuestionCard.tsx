@@ -74,15 +74,16 @@ export default function QuestionCard({ category, question, questionNum, isLast }
                 <Text className="text-[11px] font-bold text-[#8a94a6] uppercase tracking-[1.5px] ml-1 mb-2">
                     Additional Comments
                 </Text>
-                <View className="border border-[#eaedf2] rounded-[20px] bg-white px-4 min-h-[52px] justify-center py-2">
+                <View className="border border-[#eaedf2] rounded-[20px] bg-white px-4 min-h-[52px] py-3">
                     <TextInput
                         value={comments}
                         onChangeText={(text) => setResponse(category, question, { comments: text })}
                         placeholder="Type here..."
                         placeholderTextColor="#a0aab8"
                         multiline
+                        scrollEnabled={false}
                         className="text-[15px] text-[#1e1e2d] font-medium leading-[20px]"
-                        style={{ paddingTop: 0, paddingBottom: 0 }}
+                        style={{ paddingTop: 0, paddingBottom: 0, textAlignVertical: 'top' }}
                     />
                 </View>
             </View>
