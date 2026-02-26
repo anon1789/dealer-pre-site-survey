@@ -57,14 +57,14 @@ export default function NewDealer() {
         if (error) {
             Alert.alert('Error Data Creation', error.message);
         } else {
-            router.back();
+            router.replace('/dealers');
         }
     }
 
     return (
         <SafeAreaView className="flex-1 bg-[#f4f4f7]">
             <View className="px-6 py-4 flex-row items-center bg-[#f4f4f7] border-b border-[#eaedf2] z-10">
-                <TouchableOpacity onPress={() => router.back()} className="mr-4 p-2 -ml-2">
+                <TouchableOpacity onPress={() => router.replace('/dealers')} className="mr-4 p-2 -ml-2">
                     <Text className="text-slate-500 font-bold text-3xl leading-[18px]">‹</Text>
                 </TouchableOpacity>
                 <View className="flex-col pb-1">
