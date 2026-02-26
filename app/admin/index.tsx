@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, ScrollView, TextInput, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useColorScheme } from 'nativewind';
 
 const DEFAULT_WEIGHTS = [
     { category: 'Visibility & Accessibility', weight: 20, is_gatekeeper: false },
@@ -19,6 +20,7 @@ export default function AdminSettings() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [weights, setWeights] = useState<any[]>(DEFAULT_WEIGHTS);
+    const { colorScheme, toggleColorScheme } = useColorScheme();
 
     const checkAndLoadWeights = async () => {
         setLoading(true);
@@ -70,40 +72,52 @@ export default function AdminSettings() {
     const isTotalValid = currentTotal === 100;
 
     return (
-        <SafeAreaView className="flex-1 bg-[#f4f4f7]">
-            <View className="px-6 py-4 flex-row justify-between items-center bg-[#f4f4f7] border-b border-[#eaedf2] z-10">
+        <SafeAreaView className="flex-1 bg-[#f4f4f7] dark:bg-[#0A0A0C]">
+            <View className="px-6 py-4 flex-row justify-between items-center bg-[#f4f4f7] dark:bg-[#0A0A0C] border-b border-[#eaedf2] dark:border-[#2B2B36] z-10">
                 <TouchableOpacity onPress={() => router.back()} className="mr-4 p-2 -ml-2">
-                    <Text className="text-slate-500 font-bold text-3xl leading-[18px]">‹</Text>
+                    <Text className="text-slate-500 dark:text-[#9496A1] font-bold text-3xl leading-[18px]">‹</Text>
                 </TouchableOpacity>
-                <Text className="text-[17px] font-bold text-[#1e1e2d]">Admin Section Options</Text>
+                <Text className="text-[17px] font-bold text-[#1e1e2d] dark:text-white">Admin Section Options</Text>
             </View>
 
             {loading ? (
                 <ActivityIndicator className="mt-8" size="large" color="#007AFF" />
             ) : (
                 <ScrollView className="flex-1 px-5 pt-6 pb-20">
-                    <Text className="text-slate-600 mb-6 font-medium">
+                    <View className="mb-6 bg-white dark:bg-[#16161C] rounded-[24px] border border-[#eaedf2] dark:border-[#2B2B36] overflow-hidden p-5 flex-row items-center justify-between">
+                        <View className="flex-1">
+                            <Text className="text-[14px] font-bold text-[#1e1e2d] dark:text-white mb-1">Pro Dark Mode</Text>
+                            <Text className="text-[#8a94a6] dark:text-[#9496A1] text-[12px] font-medium">Toggle the high-contrast UI theme</Text>
+                        </View>
+                        <Switch
+                            value={colorScheme === 'dark'}
+                            onValueChange={toggleColorScheme}
+                            trackColor={{ false: '#eaedf2', true: '#5c3cfa' }}
+                        />
+                    </View>
+
+                    <Text className="text-slate-600 dark:text-[#9496A1] mb-6 font-medium">
                         Adjust the global calculation percentages for your surveys below. Total weight must equal 100%. Gatekeeper categories do not have point values.
                     </Text>
 
-                    <View className="bg-white rounded-[24px] border border-[#eaedf2] overflow-hidden">
-                        <View className="flex-row bg-[#fafafc] border-b border-[#f0f0f5] p-5">
-                            <Text className="flex-1 text-[11px] font-bold text-[#8a94a6] uppercase tracking-[1.5px]">Section</Text>
-                            <Text className="w-36 text-[11px] font-bold text-[#8a94a6] uppercase tracking-[1.5px] text-right">Weight</Text>
+                    <View className="bg-white dark:bg-[#16161C] rounded-[24px] border border-[#eaedf2] dark:border-[#2B2B36] overflow-hidden">
+                        <View className="flex-row bg-[#fafafc] dark:bg-[#1A1A20] border-b border-[#f0f0f5] dark:border-[#2B2B36] p-5">
+                            <Text className="flex-1 text-[11px] font-bold text-[#8a94a6] dark:text-[#717382] uppercase tracking-[1.5px]">Section</Text>
+                            <Text className="w-36 text-[11px] font-bold text-[#8a94a6] dark:text-[#717382] uppercase tracking-[1.5px] text-right">Weight</Text>
                         </View>
                         {weights.map((w, i) => (
-                            <View key={i} className={`flex-row items-center p-5 ${i !== weights.length - 1 ? 'border-b border-[#f0f0f5]' : ''}`}>
+                            <View key={i} className={`flex-row items-center p-5 ${i !== weights.length - 1 ? 'border-b border-[#f0f0f5] dark:border-[#2B2B36]' : ''}`}>
                                 <View className="flex-1 pr-4">
-                                    <Text className="font-semibold text-[14px] text-[#1e1e2d]">{w.category}</Text>
+                                    <Text className="font-semibold text-[14px] text-[#1e1e2d] dark:text-white">{w.category}</Text>
                                 </View>
 
                                 <View className="w-36 items-end">
                                     {w.is_gatekeeper ? (
-                                        <Text className="text-[#8a94a6] font-medium text-[11px] bg-[#fafafc] px-2 py-1.5 rounded-md">Gatekeeper(Non-scored)</Text>
+                                        <Text className="text-[#8a94a6] dark:text-[#9496A1] font-medium text-[11px] bg-[#fafafc] dark:bg-[#1A1A20] px-2 py-1.5 rounded-md">Gatekeeper(Non-scored)</Text>
                                     ) : (
-                                        <View className="flex-row items-center border border-[#eaedf2] rounded-[16px] px-3 py-2 bg-[#fafafc] min-w-[70px]">
+                                        <View className="flex-row items-center border border-[#eaedf2] dark:border-[#2B2B36] rounded-[16px] px-3 py-2 bg-[#fafafc] dark:bg-[#1A1A20] min-w-[70px]">
                                             <TextInput
-                                                className="font-bold text-[#1e1e2d] text-center flex-1"
+                                                className="font-bold text-[#1e1e2d] dark:text-white text-center flex-1"
                                                 keyboardType="numeric"
                                                 value={String(w.weight)}
                                                 onChangeText={(val) => {
@@ -112,7 +126,7 @@ export default function AdminSettings() {
                                                     setWeights(newWeights);
                                                 }}
                                             />
-                                            <Text className="text-slate-500 font-bold ml-1">%</Text>
+                                            <Text className="text-slate-500 dark:text-[#717382] font-bold ml-1">%</Text>
                                         </View>
                                     )}
                                 </View>
@@ -120,9 +134,9 @@ export default function AdminSettings() {
                         ))}
 
                         {/* Total Row */}
-                        <View className="flex-row items-center p-5 bg-[#fafafc] border-t border-[#eaedf2]">
+                        <View className="flex-row items-center p-5 bg-[#fafafc] dark:bg-[#13131A] border-t border-[#eaedf2] dark:border-[#2B2B36]">
                             <View className="flex-1 pr-4">
-                                <Text className="font-bold text-[12px] text-[#1e1e2d] uppercase tracking-wide">Total Combined Weighting</Text>
+                                <Text className="font-bold text-[12px] text-[#1e1e2d] dark:text-white uppercase tracking-wide">Total Combined Weighting</Text>
                             </View>
                             <View className="w-36 items-end">
                                 <Text className={`font-black text-lg ${isTotalValid ? 'text-emerald-500' : 'text-rose-500'}`}>
@@ -137,9 +151,9 @@ export default function AdminSettings() {
             )}
 
             {!loading && (
-                <View className="p-6 bg-white border-t border-[#eaedf2] pb-8 pt-4">
+                <View className="p-6 bg-white dark:bg-[#0A0A0C] border-t border-[#eaedf2] dark:border-[#2B2B36] pb-8 pt-4">
                     <TouchableOpacity
-                        className={`py-4 rounded-[20px] items-center ${saving ? 'bg-slate-300' : 'bg-[#5c3cfa]'}`}
+                        className={`py-4 rounded-[16px] items-center ${saving ? 'bg-slate-300 dark:bg-slate-700' : 'bg-[#5c3cfa] dark:bg-[#7E60FA]'}`}
                         onPress={handleSave}
                         disabled={saving}
                     >

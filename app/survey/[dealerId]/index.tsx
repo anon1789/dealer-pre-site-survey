@@ -398,13 +398,13 @@ export default function SurveyWizard() {
 
     if (submissionResult) {
         return (
-            <SafeAreaView className="flex-1 bg-[#f4f4f7] justify-center px-6">
-                <View className="w-full max-w-sm self-center bg-white p-8 rounded-[32px] items-center shadow-lg border border-[#eaedf2]">
-                    <Text className={`text-2xl font-bold mb-4 ${submissionResult.type === 'error' ? 'text-red-600' : 'text-slate-800'}`}>
+            <SafeAreaView className="flex-1 bg-[#f4f4f7] dark:bg-[#0A0A0C] justify-center px-6">
+                <View className="w-full max-w-sm self-center bg-white dark:bg-[#1A1A20] p-8 rounded-[32px] items-center shadow-lg border border-[#eaedf2] dark:border-[#2B2B36]">
+                    <Text className={`text-2xl font-bold mb-4 ${submissionResult.type === 'error' ? 'text-red-600 dark:text-red-500' : 'text-slate-800 dark:text-white'}`}>
                         {submissionResult.type === 'error' ? 'Error' : submissionResult.type === 'draft' ? 'Saved' : 'Complete'}
                     </Text>
 
-                    <Text className="text-center mb-8 text-slate-500 text-base">
+                    <Text className="text-center mb-8 text-slate-500 dark:text-[#9496A1] text-base">
                         {submissionResult.message}
                     </Text>
 
@@ -415,13 +415,13 @@ export default function SurveyWizard() {
                             </TouchableOpacity>
                         ) : (
                             <>
-                                <TouchableOpacity className="w-full bg-primary py-4 rounded-xl items-center justify-center" onPress={() => router.replace('/dealers')}>
+                                <TouchableOpacity className="w-full bg-primary dark:bg-[#7E60FA] py-4 rounded-xl items-center justify-center" onPress={() => router.replace('/dealers')}>
                                     <Text className="text-white font-bold text-base">Back to Dealers</Text>
                                 </TouchableOpacity>
 
                                 {submissionResult.type === 'draft' && (
-                                    <TouchableOpacity className="w-full border border-slate-300 bg-white py-4 rounded-xl items-center justify-center mt-4" onPress={() => setSubmissionResult(null)}>
-                                        <Text className="text-slate-700 font-bold text-base">Continue Editing</Text>
+                                    <TouchableOpacity className="w-full border border-slate-300 dark:border-[#2B2B36] bg-white dark:bg-[#1A1A20] py-4 rounded-xl items-center justify-center mt-4" onPress={() => setSubmissionResult(null)}>
+                                        <Text className="text-slate-700 dark:text-[#9496A1] font-bold text-base">Continue Editing</Text>
                                     </TouchableOpacity>
                                 )}
                             </>
@@ -433,25 +433,25 @@ export default function SurveyWizard() {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-[#f4f4f7]">
-            <View className="px-6 py-4 bg-[#f4f4f7] z-10 flex-row items-center border-b border-[#eaedf2]">
+        <SafeAreaView className="flex-1 bg-[#f4f4f7] dark:bg-[#0A0A0C]">
+            <View className="px-6 py-4 bg-[#f4f4f7] dark:bg-[#0A0A0C] z-10 flex-row items-center border-b border-[#eaedf2] dark:border-[#2B2B36]">
                 <TouchableOpacity onPress={handleBack} className="mr-4 p-2 -ml-2" disabled={submitting}>
-                    <Text className="text-slate-500 font-bold text-3xl leading-[18px]">‹</Text>
+                    <Text className="text-slate-500 dark:text-[#9496A1] font-bold text-3xl leading-[18px]">‹</Text>
                 </TouchableOpacity>
                 <View className="flex-1 flex-row items-center gap-3">
-                    <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Zeekr_logo.png/800px-Zeekr_logo.png' }} style={{ width: 68, height: 16, resizeMode: 'contain' }} className="mb-[2px]" />
-                    <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">Assessment</Text>
+                    <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Zeekr_logo.png/800px-Zeekr_logo.png' }} style={{ width: 68, height: 16, resizeMode: 'contain' }} className="mb-[2px] dark:tint-white" />
+                    <Text className="text-xs font-bold text-slate-400 dark:text-[#717382] uppercase tracking-widest leading-none">Assessment</Text>
                 </View>
                 <TouchableOpacity onPress={() => saveDraft(false)} disabled={submitting}>
-                    <Text className="text-primary font-bold ml-2">Save</Text>
+                    <Text className="text-primary dark:text-[#7E60FA] font-bold ml-2">Save</Text>
                 </TouchableOpacity>
-                <View className="bg-slate-100 rounded-full px-2 py-1 ml-2">
-                    <Text className="text-slate-500 font-bold text-sm">{progressPercent}%</Text>
+                <View className="bg-slate-100 dark:bg-[#1A1A20] rounded-full px-2 py-1 ml-2">
+                    <Text className="text-slate-500 dark:text-white font-bold text-sm">{progressPercent}%</Text>
                 </View>
             </View>
 
-            <View className="h-1 bg-slate-200 w-full relative">
-                <View className="h-full bg-primary" style={{ width: `${progressPercent}%` }} />
+            <View className="h-1 bg-slate-200 dark:bg-[#2B2B36] w-full relative">
+                <View className="h-full bg-primary dark:bg-[#7E60FA]" style={{ width: `${progressPercent}%` }} />
             </View>
 
             {validationErrors.length > 0 ? (
@@ -503,12 +503,12 @@ export default function SurveyWizard() {
                         return (
                             <Animated.View
                                 key={stepIdx}
-                                className="mb-6 p-7 pb-4 rounded-[32px] bg-white border border-[#eae9f0]"
+                                className="mb-6 p-7 pb-4 rounded-[32px] bg-white dark:bg-[#1A1A20] border border-[#eae9f0] dark:border-[#2B2B36]"
                                 style={{
                                     opacity: isActive ? 1 : 0.6,
                                     transform: [{ scale: isActive ? 1 : 0.98 }],
                                     shadowColor: '#000',
-                                    shadowOpacity: isActive ? 0.03 : 0,
+                                    shadowOpacity: isActive ? (Platform.OS === 'ios' ? 0.03 : 0) : 0,
                                     shadowRadius: 20,
                                     shadowOffset: { width: 0, height: 8 },
                                     elevation: isActive ? 3 : 0
@@ -517,10 +517,10 @@ export default function SurveyWizard() {
                             >
                                 <View className="flex-row items-center mb-8">
                                     <View className="mr-3">
-                                        <Text className={`text-[16px] ${iconColor}`}>{icon}</Text>
+                                        <Text className={`text-[16px] ${iconColor} dark:text-[#7E60FA]`}>{icon}</Text>
                                     </View>
-                                    <Text className="text-[13px] font-bold text-[#0f172a] flex-1 tracking-[0.5px] uppercase">{step.title}</Text>
-                                    {isCompleted && <Text className="text-emerald-500 font-bold text-[10px] uppercase tracking-wider">✓ Validated</Text>}
+                                    <Text className="text-[13px] font-bold text-[#0f172a] dark:text-white flex-1 tracking-[0.5px] uppercase">{step.title}</Text>
+                                    {isCompleted && <Text className="text-emerald-500 dark:text-[#4ADE80] font-bold text-[10px] uppercase tracking-wider">✓ Validated</Text>}
                                 </View>
                                 {step.questions.map((q, idx) => (
                                     <QuestionCard
@@ -538,15 +538,15 @@ export default function SurveyWizard() {
             </KeyboardAvoidingView>
 
             {/* Bottom Bar Toolbar */}
-            <View className="px-5 py-6 bg-white flex-row gap-4 items-center absolute bottom-0 w-full z-20" style={{
+            <View className="px-5 py-6 bg-white dark:bg-[#0A0A0C] flex-row gap-4 items-center absolute bottom-0 w-full z-20 border-t border-transparent dark:border-[#2B2B36]" style={{
                 shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.05, shadowRadius: 20, elevation: 20
             }}>
                 <TouchableOpacity
-                    className="flex-[0.8] h-[54px] border border-black/10 rounded-xl items-center justify-center bg-slate-50"
+                    className="flex-[0.8] h-[54px] border border-black/10 dark:border-transparent rounded-xl items-center justify-center bg-slate-50 dark:bg-[#1A1A20]"
                     onPress={handleBack}
                     disabled={submitting}
                 >
-                    <Text className="text-slate-600 font-bold text-[17px]">Cancel</Text>
+                    <Text className="text-slate-600 dark:text-[#9496A1] font-bold text-[17px]">Cancel</Text>
                 </TouchableOpacity>
 
                 <View className="flex-[1.2]">
