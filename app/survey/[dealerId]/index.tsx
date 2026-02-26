@@ -11,6 +11,8 @@ import { supabase } from '../../../utils/supabase';
 import * as Network from 'expo-network';
 import { useOfflineStore } from '../../../store/offlineStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 
 export default function SurveyWizard() {
     const { dealerId } = useLocalSearchParams();
@@ -398,166 +400,178 @@ export default function SurveyWizard() {
 
     if (submissionResult) {
         return (
-            <SafeAreaView className="flex-1 bg-[#f4f4f7] justify-center px-6">
-                <View className="w-full max-w-sm self-center bg-white p-8 rounded-[32px] items-center shadow-lg border border-[#eaedf2]">
-                    <Text className={`text-2xl font-bold mb-4 ${submissionResult.type === 'error' ? 'text-red-600' : 'text-slate-800'}`}>
-                        {submissionResult.type === 'error' ? 'Error' : submissionResult.type === 'draft' ? 'Saved' : 'Complete'}
-                    </Text>
+            <LinearGradient colors={['#1e1e2d', '#2a2a45']} className="flex-1 justify-center px-6">
+                <SafeAreaView className="flex-1 justify-center">
+                    <View className="w-full max-w-sm self-center bg-black/40 p-8 rounded-[32px] items-center shadow-lg border border-white/10 overflow-hidden">
+                        <BlurView intensity={40} tint="dark" className="absolute top-0 bottom-0 left-0 right-0" />
+                        <Text className={`relative z-10 text-2xl font-bold mb-4 ${submissionResult.type === 'error' ? 'text-red-400' : 'text-white'}`}>
+                            {submissionResult.type === 'error' ? 'Error' : submissionResult.type === 'draft' ? 'Saved' : 'Complete'}
+                        </Text>
 
-                    <Text className="text-center mb-8 text-slate-500 text-base">
-                        {submissionResult.message}
-                    </Text>
+                        <Text className="relative z-10 text-center mb-8 text-white/50 text-base">
+                            {submissionResult.message}
+                        </Text>
 
-                    <View className="w-full">
-                        {submissionResult.type === 'error' ? (
-                            <TouchableOpacity className="w-full bg-red-600 py-4 rounded-xl items-center justify-center" onPress={() => setSubmissionResult(null)}>
-                                <Text className="text-white font-bold text-base">Try Again</Text>
-                            </TouchableOpacity>
-                        ) : (
-                            <>
-                                <TouchableOpacity className="w-full bg-primary py-4 rounded-xl items-center justify-center" onPress={() => router.replace('/dealers')}>
-                                    <Text className="text-white font-bold text-base">Back to Dealers</Text>
+                        <View className="w-full relative z-10">
+                            {submissionResult.type === 'error' ? (
+                                <TouchableOpacity className="w-full bg-red-600 py-4 rounded-xl items-center justify-center" onPress={() => setSubmissionResult(null)}>
+                                    <Text className="text-white font-bold text-base">Try Again</Text>
                                 </TouchableOpacity>
-
-                                {submissionResult.type === 'draft' && (
-                                    <TouchableOpacity className="w-full border border-slate-300 bg-white py-4 rounded-xl items-center justify-center mt-4" onPress={() => setSubmissionResult(null)}>
-                                        <Text className="text-slate-700 font-bold text-base">Continue Editing</Text>
+                            ) : (
+                                <>
+                                    <TouchableOpacity className="w-full bg-primary py-4 rounded-xl items-center justify-center" onPress={() => router.replace('/dealers')}>
+                                        <Text className="text-white font-bold text-base">Back to Dealers</Text>
                                     </TouchableOpacity>
-                                )}
-                            </>
-                        )}
+
+                                    {submissionResult.type === 'draft' && (
+                                        <TouchableOpacity className="w-full border border-white/20 bg-white/5 py-4 rounded-xl items-center justify-center mt-4" onPress={() => setSubmissionResult(null)}>
+                                            <Text className="text-white/80 font-bold text-base">Continue Editing</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </>
+                            )}
+                        </View>
                     </View>
-                </View>
-            </SafeAreaView>
+                </SafeAreaView>
+            </LinearGradient>
         );
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-[#f4f4f7]">
-            <View className="px-6 py-4 bg-[#f4f4f7] z-10 flex-row items-center border-b border-[#eaedf2]">
-                <TouchableOpacity onPress={handleBack} className="mr-4 p-2 -ml-2" disabled={submitting}>
-                    <Text className="text-slate-500 font-bold text-3xl leading-[18px]">‹</Text>
-                </TouchableOpacity>
-                <View className="flex-1 flex-row items-center gap-3">
-                    <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Zeekr_logo.png/800px-Zeekr_logo.png' }} style={{ width: 68, height: 16, resizeMode: 'contain' }} className="mb-[2px]" />
-                    <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">Assessment</Text>
-                </View>
-                <TouchableOpacity onPress={() => saveDraft(false)} disabled={submitting}>
-                    <Text className="text-primary font-bold ml-2">Save</Text>
-                </TouchableOpacity>
-                <View className="bg-slate-100 rounded-full px-2 py-1 ml-2">
-                    <Text className="text-slate-500 font-bold text-sm">{progressPercent}%</Text>
-                </View>
-            </View>
-
-            <View className="h-1 bg-slate-200 w-full relative">
-                <View className="h-full bg-primary" style={{ width: `${progressPercent}%` }} />
-            </View>
-
-            {validationErrors.length > 0 ? (
-                <View className="px-5 mt-4 relative">
-                    <View className="bg-red-50 border border-red-200 p-4 rounded-xl pr-10">
-                        <Text className="text-red-800 text-sm font-bold mb-3 border-b border-red-200 pb-2">Missing Requirements</Text>
-                        {validationErrors.map((err, i) => (
-                            <TouchableOpacity key={i} onPress={() => {
-                                const y = sectionOffsets.current[err.stepIndex];
-                                if (y !== undefined) {
-                                    scrollViewRef.current?.scrollTo({ y, animated: true });
-                                }
-                            }} className="mb-2 flex-row items-center">
-                                <Text className="text-red-600 font-bold mr-2 text-[10px]">🔗</Text>
-                                <Text className="text-red-600 text-[13px] font-medium flex-1 underline tracking-tight">{err.text}</Text>
-                            </TouchableOpacity>
-                        ))}
-                        <TouchableOpacity className="absolute top-4 right-4 p-1" onPress={() => setValidationErrors([])}>
-                            <Text className="text-red-400 font-bold text-xl leading-none">✕</Text>
-                        </TouchableOpacity>
+        <LinearGradient colors={['#1e1e2d', '#2a2a45']} className="flex-1">
+            <SafeAreaView className="flex-1">
+                <View className="px-6 py-4 z-10 flex-row items-center border-b border-white/10">
+                    <TouchableOpacity onPress={handleBack} className="mr-4 p-2 -ml-2" disabled={submitting}>
+                        <Text className="text-white/50 font-bold text-3xl leading-[18px]">‹</Text>
+                    </TouchableOpacity>
+                    <View className="flex-1 flex-row items-center gap-3">
+                        <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Zeekr_logo.png/800px-Zeekr_logo.png' }} style={{ width: 68, height: 16, resizeMode: 'contain', tintColor: 'white' }} className="mb-[2px]" />
+                        <Text className="text-xs font-bold text-white/40 uppercase tracking-widest leading-none">Assessment</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => saveDraft(false)} disabled={submitting}>
+                        <Text className="text-primary font-bold ml-2">Save</Text>
+                    </TouchableOpacity>
+                    <View className="bg-white/10 rounded-full px-2 py-1 ml-2">
+                        <Text className="text-white font-bold text-sm">{progressPercent}%</Text>
                     </View>
                 </View>
-            ) : null}
 
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
-                <ScrollView
-                    ref={scrollViewRef}
-                    className="flex-1 px-5 py-6"
-                    contentContainerStyle={{ paddingBottom: 150 }}
-                    onScroll={handleScroll}
-                    scrollEventThrottle={16}
-                >
-                    {SURVEY_STEPS.map((step, stepIdx) => {
-                        let icon = '📋';
-                        let iconColor = 'text-[#5c3cfa]';
-                        if (step.id === 'compliance') { icon = '🛡️'; }
-                        else if (step.id === 'visibility') { icon = '👁️'; }
-                        else if (step.id === 'parking') { icon = '🚗'; }
-                        else if (step.id === 'customer') { icon = '👥'; }
-                        else if (step.id === 'brand') { icon = '✨'; }
-                        else if (step.id === 'facility') { icon = '🏢'; }
-                        else if (step.id === 'charging') { icon = '⚡'; }
-
-                        const isActive = activeSectionIndex === stepIdx;
-
-                        const catResponses = responses[step.title] || {};
-                        const isCompleted = step.questions.length > 0 && step.questions.every(q => catResponses[q]?.response_value);
-
-                        return (
-                            <Animated.View
-                                key={stepIdx}
-                                className="mb-6 p-7 pb-4 rounded-[32px] bg-white border border-[#eae9f0]"
-                                style={{
-                                    opacity: isActive ? 1 : 0.6,
-                                    transform: [{ scale: isActive ? 1 : 0.98 }],
-                                    shadowColor: '#000',
-                                    shadowOpacity: isActive ? 0.03 : 0,
-                                    shadowRadius: 20,
-                                    shadowOffset: { width: 0, height: 8 },
-                                    elevation: isActive ? 3 : 0
-                                }}
-                                onLayout={(e) => sectionOffsets.current[stepIdx] = e.nativeEvent.layout.y}
-                            >
-                                <View className="flex-row items-center mb-8">
-                                    <View className="mr-3">
-                                        <Text className={`text-[16px] ${iconColor}`}>{icon}</Text>
-                                    </View>
-                                    <Text className="text-[13px] font-bold text-[#0f172a] flex-1 tracking-[0.5px] uppercase">{step.title}</Text>
-                                    {isCompleted && <Text className="text-emerald-500 font-bold text-[10px] uppercase tracking-wider">✓ Validated</Text>}
-                                </View>
-                                {step.questions.map((q, idx) => (
-                                    <QuestionCard
-                                        key={idx}
-                                        category={step.title}
-                                        question={q}
-                                        questionNum={`${stepIdx + 1}.${idx + 1}`}
-                                        isLast={idx === step.questions.length - 1}
-                                    />
-                                ))}
-                            </Animated.View>
-                        );
-                    })}
-                </ScrollView>
-            </KeyboardAvoidingView>
-
-            {/* Bottom Bar Toolbar */}
-            <View className="px-5 py-6 bg-white flex-row gap-4 items-center absolute bottom-0 w-full z-20" style={{
-                shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.05, shadowRadius: 20, elevation: 20
-            }}>
-                <TouchableOpacity
-                    className="flex-[0.8] h-[54px] border border-black/10 rounded-xl items-center justify-center bg-slate-50"
-                    onPress={handleBack}
-                    disabled={submitting}
-                >
-                    <Text className="text-slate-600 font-bold text-[17px]">Cancel</Text>
-                </TouchableOpacity>
-
-                <View className="flex-[1.2]">
-                    <MagneticButton
-                        title="Submit Audit"
-                        onPress={handleSubmit}
-                        loading={submitting}
-                        disabled={submitting}
-                    />
+                <View className="h-1 bg-white/10 w-full relative">
+                    <View className="h-full bg-primary" style={{ width: `${progressPercent}%` }} />
                 </View>
-            </View>
-        </SafeAreaView>
+
+                {validationErrors.length > 0 ? (
+                    <View className="px-5 mt-4 relative">
+                        <View className="bg-red-50 border border-red-200 p-4 rounded-xl pr-10">
+                            <Text className="text-red-800 text-sm font-bold mb-3 border-b border-red-200 pb-2">Missing Requirements</Text>
+                            {validationErrors.map((err, i) => (
+                                <TouchableOpacity key={i} onPress={() => {
+                                    const y = sectionOffsets.current[err.stepIndex];
+                                    if (y !== undefined) {
+                                        scrollViewRef.current?.scrollTo({ y, animated: true });
+                                    }
+                                }} className="mb-2 flex-row items-center">
+                                    <Text className="text-red-600 font-bold mr-2 text-[10px]">🔗</Text>
+                                    <Text className="text-red-600 text-[13px] font-medium flex-1 underline tracking-tight">{err.text}</Text>
+                                </TouchableOpacity>
+                            ))}
+                            <TouchableOpacity className="absolute top-4 right-4 p-1" onPress={() => setValidationErrors([])}>
+                                <Text className="text-red-400 font-bold text-xl leading-none">✕</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                ) : null}
+
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
+                    <ScrollView
+                        ref={scrollViewRef}
+                        className="flex-1 px-5 py-6"
+                        contentContainerStyle={{ paddingBottom: 150 }}
+                        onScroll={handleScroll}
+                        scrollEventThrottle={16}
+                    >
+                        {SURVEY_STEPS.map((step, stepIdx) => {
+                            let icon = '📋';
+                            let iconColor = 'text-[#5c3cfa]';
+                            if (step.id === 'compliance') { icon = '🛡️'; }
+                            else if (step.id === 'visibility') { icon = '👁️'; }
+                            else if (step.id === 'parking') { icon = '🚗'; }
+                            else if (step.id === 'customer') { icon = '👥'; }
+                            else if (step.id === 'brand') { icon = '✨'; }
+                            else if (step.id === 'facility') { icon = '🏢'; }
+                            else if (step.id === 'charging') { icon = '⚡'; }
+
+                            const isActive = activeSectionIndex === stepIdx;
+
+                            const catResponses = responses[step.title] || {};
+                            const isCompleted = step.questions.length > 0 && step.questions.every(q => catResponses[q]?.response_value);
+
+                            return (
+                                <Animated.View
+                                    key={stepIdx}
+                                    className="mb-6 rounded-[32px] border border-white/10 overflow-hidden"
+                                    style={{
+                                        opacity: isActive ? 1 : 0.6,
+                                        transform: [{ scale: isActive ? 1 : 0.98 }],
+                                        shadowColor: '#000',
+                                        shadowOpacity: isActive ? 0.3 : 0.1,
+                                        shadowRadius: 20,
+                                        shadowOffset: { width: 0, height: 8 },
+                                        elevation: isActive ? 5 : 0
+                                    }}
+                                    onLayout={(e) => sectionOffsets.current[stepIdx] = e.nativeEvent.layout.y}
+                                >
+                                    <BlurView intensity={25} tint="dark" className="absolute top-0 bottom-0 left-0 right-0" />
+                                    <View className="absolute top-0 bottom-0 left-0 right-0 bg-white/5" />
+
+                                    <View className="p-7 pb-4">
+                                        <View className="flex-row items-center mb-8">
+                                            <View className="mr-3">
+                                                <Text className={`text-[16px] ${iconColor}`}>{icon}</Text>
+                                            </View>
+                                            <Text className="text-[13px] font-bold text-white flex-1 tracking-[0.5px] uppercase">{step.title}</Text>
+                                            {isCompleted && <Text className="text-emerald-500 font-bold text-[10px] uppercase tracking-wider">✓ Validated</Text>}
+                                        </View>
+                                        {step.questions.map((q, idx) => (
+                                            <QuestionCard
+                                                key={idx}
+                                                category={step.title}
+                                                question={q}
+                                                questionNum={`${stepIdx + 1}.${idx + 1}`}
+                                                isLast={idx === step.questions.length - 1}
+                                            />
+                                        ))}
+                                    </View>
+                                </Animated.View>
+                            );
+                        })}
+                    </ScrollView>
+                </KeyboardAvoidingView>
+
+                {/* Bottom Bar Toolbar */}
+                <View className="px-5 py-6 flex-row gap-4 items-center absolute bottom-0 w-full z-20 overflow-hidden" style={{
+                    shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.3, shadowRadius: 20, elevation: 20
+                }}>
+                    <BlurView intensity={50} tint="dark" className="absolute top-0 bottom-0 left-0 right-0" />
+                    <View className="absolute top-0 bottom-0 left-0 right-0 bg-[#1e1e2d]/60 border-t border-white/10" />
+                    <TouchableOpacity
+                        className="flex-[0.8] h-[54px] border border-white/20 rounded-xl items-center justify-center bg-white/5 relative z-10"
+                        onPress={handleBack}
+                        disabled={submitting}
+                    >
+                        <Text className="text-white/70 font-bold text-[17px]">Cancel</Text>
+                    </TouchableOpacity>
+
+                    <View className="flex-[1.2] relative z-10">
+                        <MagneticButton
+                            title="Submit Audit"
+                            onPress={handleSubmit}
+                            loading={submitting}
+                            disabled={submitting}
+                        />
+                    </View>
+                </View>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }

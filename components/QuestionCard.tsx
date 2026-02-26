@@ -30,21 +30,21 @@ export default function QuestionCard({ category, question, questionNum, isLast }
         const isSelected = responseValue === val;
         return (
             <TouchableOpacity
-                className={`flex-1 mx-1 rounded-[20px] items-center justify-center border ${isSelected ? 'bg-[#5c3cfa] border-[#5c3cfa]' : 'bg-white border-[#eaedf2]'}`}
-                style={{ height: 52 }}
+                className={`flex-1 mx-1 rounded-[16px] items-center justify-center ${isSelected ? 'bg-[#5c3cfa] border-2 border-white/20' : 'bg-white/5'}`}
+                style={{ height: 48 }}
                 onPress={() => handleSelect(val)}
                 activeOpacity={0.7}
             >
-                <Text className={`font-semibold text-[13px] ${isSelected ? 'text-white' : 'text-[#8a94a6]'}`}>{label}</Text>
+                <Text className={`font-semibold text-[14px] ${isSelected ? 'text-white' : 'text-white/80'}`}>{label}</Text>
             </TouchableOpacity>
         );
     };
 
     return (
-        <View className="mb-4 bg-[#fafafc] border border-[#eaedf2] rounded-[24px] p-5 shadow-sm shadow-black/5">
+        <View className="mb-4 bg-white/5 border border-white/10 rounded-[24px] p-5">
             <View className="mb-5">
-                <Text className="text-[11px] font-bold text-[#8a94a6] uppercase tracking-[1.5px] ml-1 mb-2">
-                    {questionNum ? `${questionNum} ` : ''}{question}
+                <Text className="text-[15px] font-medium text-white mb-4 pr-2">
+                    {questionNum ? `${questionNum}. ` : ''}{question}
                 </Text>
 
                 <View className="flex-row justify-between -mx-1">
@@ -56,36 +56,36 @@ export default function QuestionCard({ category, question, questionNum, isLast }
             </View>
 
             <View className="mb-5">
-                <Text className="text-[11px] font-bold text-[#8a94a6] uppercase tracking-[1.5px] ml-1 mb-2">
+                <Text className="text-[11px] font-bold text-white/50 uppercase tracking-[1.5px] ml-1 mb-2">
                     Media Evidence
                 </Text>
                 <TouchableOpacity
-                    className="border border-dashed border-[#d0d0d8] rounded-[20px] h-[52px] items-center justify-center bg-white flex-row overflow-hidden"
+                    className="border border-dashed border-white/20 rounded-[16px] h-[80px] items-center justify-center bg-white/5 flex-row overflow-hidden"
                     activeOpacity={0.7}
                     onPress={handlePickImage}
                 >
                     {photoUri ? (
                         <Image source={{ uri: photoUri }} className="w-full h-full" resizeMode="cover" />
                     ) : (
-                        <Text className="text-[#8a94a6] font-semibold text-[13px]">📸 Upload Photo</Text>
+                        <Text className="text-white/50 font-medium text-[13px]">Tap to capture photo</Text>
                     )}
                 </TouchableOpacity>
             </View>
 
             <View>
-                <Text className="text-[11px] font-bold text-[#8a94a6] uppercase tracking-[1.5px] ml-1 mb-2">
+                <Text className="text-[11px] font-bold text-white/50 uppercase tracking-[1.5px] ml-1 mb-2">
                     Additional Comments
                 </Text>
-                <View className="border border-[#eaedf2] rounded-[20px] bg-white px-4 min-h-[52px] py-3">
+                <View className="border border-white/10 rounded-[20px] bg-white/5 px-4 min-h-[52px] py-3">
                     <TextInput
                         value={comments}
                         onChangeText={(text) => setResponse(category, question, { comments: text })}
                         placeholder="Type here..."
-                        placeholderTextColor="#a0aab8"
+                        placeholderTextColor="rgba(255,255,255,0.3)"
                         multiline
                         scrollEnabled={false}
                         onContentSizeChange={(e) => setInputHeight(e.nativeEvent.contentSize.height)}
-                        className="text-[15px] text-[#1e1e2d] font-medium leading-[20px]"
+                        className="text-[15px] text-white font-medium leading-[20px]"
                         style={{ paddingTop: 0, paddingBottom: 0, textAlignVertical: 'top', height: Math.max(20, inputHeight) }}
                     />
                 </View>
